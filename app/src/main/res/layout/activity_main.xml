@@ -11,125 +11,135 @@
 
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" />
 
         <TextView
+            android:id="@+id/Q"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Q"
-            android:id="@+id/Q"
-            android:singleLine="false"
+            android:focusableInTouchMode="false"
             android:gravity="center"
-            android:textIsSelectable="true" />
+            android:singleLine="false"
+            android:text="@string/question_placeholder"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textIsSelectable="true"
+            android:textSize="75sp" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" />
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="A1"
                 android:id="@+id/A1"
-                android:layout_column="1"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:allowUndo="true" />
+                android:text="@string/answer_placeholder"
+                android:textSize="25sp" />
 
             <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="A2"
                 android:id="@+id/A2"
-                android:layout_column="1"
-                android:layout_weight="1" />
-
-            <Button
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/answer_placeholder"
+                android:textSize="25sp" />
+
+            <Button
                 android:id="@+id/A3"
-                android:layout_column="1"
-                android:text="A3"
-                android:layout_weight="1" />
-
-            <Button
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="A4"
+                android:layout_weight="1"
+                android:text="@string/answer_placeholder"
+                android:textSize="25sp" />
+
+            <Button
                 android:id="@+id/A4"
-                android:layout_column="1"
-                android:layout_weight="1" />
-
-            <Button
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="A5"
+                android:layout_weight="1"
+                android:text="@string/answer_placeholder"
+                android:textSize="25sp" />
+
+            <Button
                 android:id="@+id/A5"
-                android:layout_column="8"
-                android:layout_weight="1" />
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/answer_placeholder"
+                android:textSize="25sp" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="A6"
                 android:id="@+id/A6"
-                android:layout_column="1"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:allowUndo="true" />
+                android:text="@string/answer_placeholder"
+                android:textSize="25sp" />
 
             <Button
-                style="?android:attr/buttonStyleSmall"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="A7"
                 android:id="@+id/A7"
-                android:layout_column="1"
-                android:layout_weight="1" />
-
-            <Button
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/answer_placeholder"
+                android:textSize="25sp" />
+
+            <Button
                 android:id="@+id/A8"
-                android:layout_column="1"
-                android:text="A8"
-                android:layout_weight="1" />
-
-            <Button
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="A9"
+                android:layout_weight="1"
+                android:text="@string/answer_placeholder"
+                android:textSize="25sp" />
+
+            <Button
                 android:id="@+id/A9"
-                android:layout_column="1"
-                android:layout_weight="1" />
-
-            <Button
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="A10"
+                android:layout_weight="1"
+                android:text="@string/answer_placeholder"
+                android:textSize="25sp" />
+
+            <Button
                 android:id="@+id/A10"
-                android:layout_column="8"
-                android:layout_weight="1" />
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/answer_placeholder"
+                android:textSize="25sp" />
         </LinearLayout>
 
     </LinearLayout>
