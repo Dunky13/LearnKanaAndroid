@@ -3,4 +3,6 @@
     <string name="app_title">Learn かな</string>
     <string name="question_placeholder">Q</string>
     <string name="answer_placeholder">A</string>
+    <string name="preference_file_key">LearnKana</string>
+    <string name="null_data_storage">{\"timestamp\": 0, \"gameScore\": 0}</string>
 </resources>

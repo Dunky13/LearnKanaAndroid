@@ -1,7 +1,5 @@
 package online.learnkana.android.learnkanaonline.mechanics;
 
-import android.content.SharedPreferences;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -226,5 +224,11 @@ public class JAll {
             }
         }
         this.findLastActiveBlock();
+    }
+    public void loadJSON(String jSONData)
+    {
+        try {
+            this.load(jSONData);
+        } catch (JSONException e){}
     }
 }

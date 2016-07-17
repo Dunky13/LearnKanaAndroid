@@ -1,18 +1,86 @@
 package online.learnkana.android.learnkanaonline;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import online.learnkana.android.learnkanaonline.mechanics.FileStorage;
 import online.learnkana.android.learnkanaonline.mechanics.JAll;
 import online.learnkana.android.learnkanaonline.mechanics.JBlock;
 import online.learnkana.android.learnkanaonline.mechanics.JChar;
+import online.learnkana.android.learnkanaonline.mechanics.Q;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    JAll jAll;
+    Context context;
+    Q question;
+    List<Button> answerButtons;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.jAll = this.loadCharacters();
+        this.context = getApplicationContext();
+
+        answerButtons = new ArrayList<Button>(10);
+        answerButtons.add((Button) findViewById(R.id.A1));
+        answerButtons.add((Button) findViewById(R.id.A2));
+        answerButtons.add((Button) findViewById(R.id.A3));
+        answerButtons.add((Button) findViewById(R.id.A4));
+        answerButtons.add((Button) findViewById(R.id.A5));
+        answerButtons.add((Button) findViewById(R.id.A6));
+        answerButtons.add((Button) findViewById(R.id.A7));
+        answerButtons.add((Button) findViewById(R.id.A8));
+        answerButtons.add((Button) findViewById(R.id.A9));
+        answerButtons.add((Button) findViewById(R.id.A10));
+
+        for(Button b : answerButtons)
+        {
+            b.setOnClickListener(this);
+        }
+
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        this.loadData();
+    }
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        this.saveData();
+    }
+    private void showNextQuestion()
+    {
+        this.question = this.jAll.getQuestion();
+        TextView qText = (TextView) findViewById(R.id.Q);
+        qText.setText(this.question.getQA().getQuestion());
+        List<String> answers = this.question.getQA().getAnswers();
+        for(int i = 0; i < this.answerButtons.size(); i++)
+        {
+            this.answerButtons.get(i).setText(answers.get(i));
+        }
+    }
+    private void loadData()
+    {
+        //TODO: Load from Google Drive
+        this.jAll.loadJSON(FileStorage.load(this.context));
+    }
+    private void saveData()
+    {
+        //TODO: Save to Google Drive
+        FileStorage.save(this.context, jAll.getJSON());
     }
 
     private JAll loadCharacters()
@@ -236,5 +304,38 @@ public class MainActivity extends AppCompatActivity {
         pyBlock.addJChar(new JChar("pyo", "ぴょ", "ピョ"));
 
         return jAll;
+    }
+
+    private void colorButtons(Button correct, JChar alternative)
+    {
+        for(Button b : this.answerButtons)
+        {
+            String buttonText = b.getText().toString();
+            if(b.equals(correct))
+            {
+                //TODO: Make green
+            }
+            else if(buttonText.equals(alternative)) //TODO: Check JChar
+            {
+                //TODO: Make yellow
+            }
+        }
+    }
+    private void clickAnswer(Button b)
+    {
+        JChar correct = this.jAll.getQuestion().answer(b.getText().toString());
+        if(b.getTag(R.integer.disabledTag) != null) return;
+        if(correct != null)
+        {
+            colorButtons(b, correct);
+
+
+        }
+    }
+    @Override
+    public void onClick(View view) {
+        Button b = (Button)view;
+
+
     }
 }

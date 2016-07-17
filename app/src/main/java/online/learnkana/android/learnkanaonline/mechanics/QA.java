@@ -17,7 +17,7 @@ public class QA{
     public String getQuestion() {
         return question;
     }
-
+    public List<String> getAnswers(){return  answers;}
     public JCharEnum getType() {
         return type;
     }

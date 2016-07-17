@@ -49,4 +49,9 @@ public class Q {
 
         return correct;
     }
+
+    public QA getQA()
+    {
+        return this.qa;
+    }
 }
