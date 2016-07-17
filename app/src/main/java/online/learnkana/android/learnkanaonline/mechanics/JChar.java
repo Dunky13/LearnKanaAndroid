@@ -1,5 +1,7 @@
 package online.learnkana.android.learnkanaonline.mechanics;
 
+import android.widget.Button;
+
 /**
  * Created by Marc on 7/14/2016.
  */
@@ -59,4 +61,14 @@ public class JChar {
 
     public void setHScore(double hScore) {this.hScore = hScore;}
     public void setKScore(double kScore) {this.kScore = kScore;}
+
+    public boolean hasText(String s)
+    {
+        return this.romaji.equals(s) || this.hiragana.equals(s) || this.katakana.equals(s);
+    }
+    public boolean compareToButton(Button b)
+    {
+        String buttonText = b.getText().toString();
+        return this.hasText(buttonText);
+    }
 }

@@ -3,8 +3,13 @@ package online.learnkana.android.learnkanaonline;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
+import android.support.annotation.ColorInt;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,60 +22,126 @@ import online.learnkana.android.learnkanaonline.mechanics.JAll;
 import online.learnkana.android.learnkanaonline.mechanics.JBlock;
 import online.learnkana.android.learnkanaonline.mechanics.JChar;
 import online.learnkana.android.learnkanaonline.mechanics.Q;
+import online.learnkana.android.learnkanaonline.mechanics.Statics;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    JAll jAll;
-    Context context;
-    Q question;
-    List<Button> answerButtons;
+    public static final String LOGTAG = "LearnKanaLogTag";
+    private JAll jAll;
+    private Context context;
+    private Q question;
+
+    private TextView questionView;
+    private List<Button> answerButtons;
+    private Button next;
+
+    private Object load;
+    private void primaryInit()
+    {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run()
+            {
+                jAll = Statics.loadCharacters();
+            }
+        });
+        t.start();
+        Log.d(LOGTAG, "Thread started");
+        try {
+            t.join();
+            Log.d(LOGTAG,"Threads should be joined");
+            synchronized (load)
+            {
+                load.notifyAll();
+            }
+        } catch (InterruptedException e) {
+
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.jAll = this.loadCharacters();
+        this.load = new Object();
+        primaryInit();
+//        this.jAll = this.loadCharacters();
         this.context = getApplicationContext();
 
-        answerButtons = new ArrayList<Button>(10);
-        answerButtons.add((Button) findViewById(R.id.A1));
-        answerButtons.add((Button) findViewById(R.id.A2));
-        answerButtons.add((Button) findViewById(R.id.A3));
-        answerButtons.add((Button) findViewById(R.id.A4));
-        answerButtons.add((Button) findViewById(R.id.A5));
-        answerButtons.add((Button) findViewById(R.id.A6));
-        answerButtons.add((Button) findViewById(R.id.A7));
-        answerButtons.add((Button) findViewById(R.id.A8));
-        answerButtons.add((Button) findViewById(R.id.A9));
-        answerButtons.add((Button) findViewById(R.id.A10));
+        this.questionView = (TextView) findViewById(R.id.Q);
+        this.answerButtons = new ArrayList<Button>(10);
+        this.answerButtons.add((Button) findViewById(R.id.A1));
+        this.answerButtons.add((Button) findViewById(R.id.A2));
+        this.answerButtons.add((Button) findViewById(R.id.A3));
+        this.answerButtons.add((Button) findViewById(R.id.A4));
+        this.answerButtons.add((Button) findViewById(R.id.A5));
+        this.answerButtons.add((Button) findViewById(R.id.A6));
+        this.answerButtons.add((Button) findViewById(R.id.A7));
+        this.answerButtons.add((Button) findViewById(R.id.A8));
+        this.answerButtons.add((Button) findViewById(R.id.A9));
+        this.answerButtons.add((Button) findViewById(R.id.A10));
 
-        for(Button b : answerButtons)
+        for(Button b : this.answerButtons)
         {
             b.setOnClickListener(this);
         }
 
+        this.next = (Button) findViewById(R.id.next);
+        this.next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Button b = (Button) view;
+                Boolean disabled = (Boolean) b.getTag(R.integer.disabledTag);
+                if(disabled == null || disabled.booleanValue() == true) return;
+                showNextQuestion();
+            }
+        });
     }
 
     @Override
     protected void onStart()
     {
         super.onStart();
-        this.loadData();
+        //this.loadData();
+        showNextQuestion();
     }
     @Override
     protected void onPause()
     {
         super.onPause();
-        this.saveData();
+        //this.saveData();
     }
     private void showNextQuestion()
     {
-        this.question = this.jAll.getQuestion();
-        TextView qText = (TextView) findViewById(R.id.Q);
-        qText.setText(this.question.getQA().getQuestion());
-        List<String> answers = this.question.getQA().getAnswers();
-        for(int i = 0; i < this.answerButtons.size(); i++)
-        {
-            this.answerButtons.get(i).setText(answers.get(i));
+        while(jAll == null) {
+            try {
+                synchronized (load) {
+                    load.wait(500);
+                }
+            } catch (InterruptedException e) {
+
+            }
         }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                resetTags();
+                question = jAll.getQuestion();
+                final List<String> answers = question.getQA().getAnswers();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        question = jAll.getQuestion();
+                        questionView.setText(question.getQA().getQuestion());
+                        for(int i = 0; i < answerButtons.size(); i++)
+                        {
+                            answerButtons.get(i).setText(answers.get(i));
+                        }
+                    }
+                });
+            }
+        }).start();
+
     }
     private void loadData()
     {
@@ -83,259 +154,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FileStorage.save(this.context, jAll.getJSON());
     }
 
-    private JAll loadCharacters()
+    private void resetTags()
     {
-        JAll jAll = new JAll();
-
-        JBlock vowelBlock = new JBlock("v",1);
-        jAll.addJBlock(vowelBlock);
-        vowelBlock.setAchievementID("CgkI-byp9IcCEAIQAQ");
-        vowelBlock.addJChar(new JChar("a", "あ", "ア"));
-        vowelBlock.addJChar(new JChar("i", "い", "イ"));
-        vowelBlock.addJChar(new JChar("u", "う", "ウ"));
-        vowelBlock.addJChar(new JChar("e", "え", "エ"));
-        vowelBlock.addJChar(new JChar("o", "お", "オ"));
-
-        JBlock kBlock = new JBlock("k",0);
-        jAll.addJBlock(kBlock);
-        kBlock.setAchievementID("CgkI-byp9IcCEAIQAg");
-        kBlock.addJChar(new JChar("ka", "か", "カ"));
-        kBlock.addJChar(new JChar("ki", "き", "キ"));
-        kBlock.addJChar(new JChar("ku", "く", "ク"));
-        kBlock.addJChar(new JChar("ke", "け", "ケ"));
-        kBlock.addJChar(new JChar("ko", "こ", "コ"));
-
-        JBlock sBlock = new JBlock("s",0);
-        jAll.addJBlock(sBlock);
-        sBlock.setAchievementID("CgkI-byp9IcCEAIQAw");
-        sBlock.addJChar(new JChar("sa", "さ", "サ"));
-        sBlock.addJChar(new JChar("shi", "し", "シ"));
-        sBlock.addJChar(new JChar("su", "す", "ス"));
-        sBlock.addJChar(new JChar("se", "せ", "セ"));
-        sBlock.addJChar(new JChar("so", "そ", "ソ"));
-
-        JBlock tBlock = new JBlock("t",0);
-        jAll.addJBlock(tBlock);
-        tBlock.setAchievementID("CgkI-byp9IcCEAIQBA");
-        tBlock.addJChar(new JChar("ta", "た", "タ"));
-        tBlock.addJChar(new JChar("chi", "ち", "チ"));
-        tBlock.addJChar(new JChar("tsu", "つ", "ツ"));
-        tBlock.addJChar(new JChar("te", "て", "テ"));
-        tBlock.addJChar(new JChar("to", "と", "ト"));
-
-        JBlock nBlock = new JBlock("n",0);
-        jAll.addJBlock(nBlock);
-        nBlock.setAchievementID("CgkI-byp9IcCEAIQBQ");
-        nBlock.addJChar(new JChar("na", "な", "ナ"));
-        nBlock.addJChar(new JChar("ni", "に", "ニ"));
-        nBlock.addJChar(new JChar("nu", "ぬ", "ヌ"));
-        nBlock.addJChar(new JChar("ne", "ね", "ネ"));
-        nBlock.addJChar(new JChar("no", "の", "ノ"));
-
-        JBlock hBlock = new JBlock("h",0);
-        jAll.addJBlock(hBlock);
-        hBlock.setAchievementID("CgkI-byp9IcCEAIQBg");
-        hBlock.addJChar(new JChar("ha", "は", "ハ"));
-        hBlock.addJChar(new JChar("hi", "ひ", "ヒ"));
-        hBlock.addJChar(new JChar("fu", "ふ", "フ"));
-        hBlock.addJChar(new JChar("he", "へ", "ヘ"));
-        hBlock.addJChar(new JChar("ho", "ほ", "ホ"));
-
-        JBlock mBlock = new JBlock("m",0);
-        jAll.addJBlock(mBlock);
-        mBlock.setAchievementID("CgkI-byp9IcCEAIQBw");
-        mBlock.addJChar(new JChar("ma", "ま", "マ"));
-        mBlock.addJChar(new JChar("mi", "み", "ミ"));
-        mBlock.addJChar(new JChar("mu", "む", "ム"));
-        mBlock.addJChar(new JChar("me", "め", "メ"));
-        mBlock.addJChar(new JChar("mo", "も", "モ"));
-
-        JBlock yBlock = new JBlock("y",0);
-        jAll.addJBlock(yBlock);
-        yBlock.setAchievementID("CgkI-byp9IcCEAIQCA");
-        yBlock.addJChar(new JChar("ya", "や", "ヤ"));
-        yBlock.addJChar(new JChar("yu", "ゆ", "ユ"));
-        yBlock.addJChar(new JChar("yo", "よ", "ヨ"));
-
-        JBlock rBlock = new JBlock("r",0);
-        jAll.addJBlock(rBlock);
-        rBlock.setAchievementID("CgkI-byp9IcCEAIQCQ");
-        rBlock.addJChar(new JChar("ra", "ら", "ラ"));
-        rBlock.addJChar(new JChar("ri", "り", "リ"));
-        rBlock.addJChar(new JChar("ru", "る", "ル"));
-        rBlock.addJChar(new JChar("re", "れ", "レ"));
-        rBlock.addJChar(new JChar("ro", "ろ", "ロ"));
-
-        JBlock wBlock = new JBlock("w",0);
-        jAll.addJBlock(wBlock);
-        wBlock.setAchievementID("CgkI-byp9IcCEAIQCg");
-        wBlock.addJChar(new JChar("wa", "わ", "ワ"));
-        wBlock.addJChar(new JChar("wo", "を", "ヲ"));
-        wBlock.addJChar(new JChar("n", "ん", "ン"));
-
-        JBlock gBlock = new JBlock("g",0);
-        jAll.addJBlock(gBlock);
-        gBlock.setAchievementID("CgkI-byp9IcCEAIQCw");
-        gBlock.addJChar(new JChar("ga", "が", "ガ"));
-        gBlock.addJChar(new JChar("gi", "ぎ", "ギ"));
-        gBlock.addJChar(new JChar("gu", "ぐ", "グ"));
-        gBlock.addJChar(new JChar("ge", "げ", "ゲ"));
-        gBlock.addJChar(new JChar("go", "ご", "ゴ"));
-
-        JBlock zBlock = new JBlock("z",0);
-        jAll.addJBlock(zBlock);
-        zBlock.setAchievementID("CgkI-byp9IcCEAIQDA");
-        zBlock.addJChar(new JChar("za", "ざ", "ザ"));
-        zBlock.addJChar(new JChar("ji (z)", "じ", "ジ"));
-        zBlock.addJChar(new JChar("zu", "ず", "ズ"));
-        zBlock.addJChar(new JChar("ze", "ぜ", "ゼ"));
-        zBlock.addJChar(new JChar("zo", "ぞ", "ゾ"));
-
-        JBlock dBlock = new JBlock("d",0);
-        jAll.addJBlock(dBlock);
-        dBlock.setAchievementID("CgkI-byp9IcCEAIQDQ");
-        dBlock.addJChar(new JChar("da", "だ", "ダ"));
-        dBlock.addJChar(new JChar("ji (d)", "ぢ", "ヂ"));
-        dBlock.addJChar(new JChar("zu", "づ", "ヅ"));
-        dBlock.addJChar(new JChar("de", "で", "デ"));
-        dBlock.addJChar(new JChar("do", "ど", "ド"));
-
-        JBlock bBlock = new JBlock("b",0);
-        jAll.addJBlock(bBlock);
-        bBlock.setAchievementID("CgkI-byp9IcCEAIQDw");
-        bBlock.addJChar(new JChar("ba", "ば", "バ"));
-        bBlock.addJChar(new JChar("bi", "び", "ビ"));
-        bBlock.addJChar(new JChar("bu", "ぶ", "ブ"));
-        bBlock.addJChar(new JChar("be", "べ", "ベ"));
-        bBlock.addJChar(new JChar("bo", "ぼ", "ボ"));
-
-        JBlock pBlock = new JBlock("p",0);
-        jAll.addJBlock(pBlock);
-        pBlock.setAchievementID("CgkI-byp9IcCEAIQDw");
-        pBlock.addJChar(new JChar("pa", "ぱ", "パ"));
-        pBlock.addJChar(new JChar("pi", "ぴ", "ピ"));
-        pBlock.addJChar(new JChar("pu", "ぷ", "プ"));
-        pBlock.addJChar(new JChar("pe", "ぺ", "ペ"));
-        pBlock.addJChar(new JChar("po", "ぽ", "ポ"));
-        pBlock.addJChar(new JChar("vu", "ゔ", "ゔ"));
-
-        JBlock kyBlock = new JBlock("ky",0);
-        jAll.addJBlock(kyBlock);
-        kyBlock.setAchievementID("CgkI-byp9IcCEAIQEA");
-        kyBlock.addJChar(new JChar("kya", "きゃ", "キャ"));
-        kyBlock.addJChar(new JChar("kyu", "きゅ", "キュ"));
-        kyBlock.addJChar(new JChar("kyo", "きょ", "キョ"));
-
-        JBlock shBlock = new JBlock("sh",0);
-        jAll.addJBlock(shBlock);
-        shBlock.setAchievementID("CgkI-byp9IcCEAIQEQ");
-        shBlock.addJChar(new JChar("sha", "しゃ", "シャ"));
-        shBlock.addJChar(new JChar("shu", "しゅ", "シュ"));
-        shBlock.addJChar(new JChar("sho", "しょ", "ショ"));
-
-        JBlock chBlock = new JBlock("ch",0);
-        jAll.addJBlock(chBlock);
-        chBlock.setAchievementID("CgkI-byp9IcCEAIQEg");
-        chBlock.addJChar(new JChar("cha", "ちゃ", "チャ"));
-        chBlock.addJChar(new JChar("chu", "ちゅ", "チュ"));
-        chBlock.addJChar(new JChar("cho", "ちょ", "チョ"));
-
-        JBlock nyBlock = new JBlock("ny",0);
-        jAll.addJBlock(nyBlock);
-        nyBlock.setAchievementID("CgkI-byp9IcCEAIQEw");
-        nyBlock.addJChar(new JChar("nya", "にゃ", "ニャ"));
-        nyBlock.addJChar(new JChar("nyu", "にゅ", "ニュ"));
-        nyBlock.addJChar(new JChar("nyo", "にょ", "ニョ"));
-
-        JBlock hyBlock = new JBlock("hy",0);
-        jAll.addJBlock(hyBlock);
-        hyBlock.setAchievementID("CgkI-byp9IcCEAIQFA");
-        hyBlock.addJChar(new JChar("hya", "ひゃ", "ヒャ"));
-        hyBlock.addJChar(new JChar("hyu", "ひゅ", "ヒュ"));
-        hyBlock.addJChar(new JChar("hyo", "ひょ", "ヒョ"));
-
-        JBlock myBlock = new JBlock("my",0);
-        jAll.addJBlock(myBlock);
-        myBlock.setAchievementID("CgkI-byp9IcCEAIQFQ");
-        myBlock.addJChar(new JChar("mya", "みゃ", "ミャ"));
-        myBlock.addJChar(new JChar("myu", "みゅ", "ミュ"));
-        myBlock.addJChar(new JChar("myo", "みょ", "ミョ"));
-
-        JBlock ryBlock = new JBlock("ry",0);
-        jAll.addJBlock(ryBlock);
-        ryBlock.setAchievementID("CgkI-byp9IcCEAIQFg");
-        ryBlock.addJChar(new JChar("rya", "りゃ", "リャ"));
-        ryBlock.addJChar(new JChar("ryu", "りゅ", "リュ"));
-        ryBlock.addJChar(new JChar("ryo", "りょ", "リョ"));
-
-        JBlock gyBlock = new JBlock("gy",0);
-        jAll.addJBlock(gyBlock);
-        gyBlock.setAchievementID("CgkI-byp9IcCEAIQFw");
-        gyBlock.addJChar(new JChar("gya", "ぎゃ", "ギャ"));
-        gyBlock.addJChar(new JChar("gyu", "ぎゅ", "ギュ"));
-        gyBlock.addJChar(new JChar("gyo", "ぎょ", "ギョ"));
-
-        JBlock zjBlock = new JBlock("zj",0);
-        jAll.addJBlock(zjBlock);
-        zjBlock.setAchievementID("CgkI-byp9IcCEAIQGA");
-        zjBlock.addJChar(new JChar("ja (z)", "じゃ", "ジャ"));
-        zjBlock.addJChar(new JChar("ju (z)", "じゅ", "ジュ"));
-        zjBlock.addJChar(new JChar("jo (z)", "じょ", "ジョ"));
-
-        JBlock djBlock = new JBlock("dj",0);
-        jAll.addJBlock(djBlock);
-        djBlock.setAchievementID("CgkI-byp9IcCEAIQGQ");
-        djBlock.addJChar(new JChar("ja (d)", "ぢゃ", "ヂャ"));
-        djBlock.addJChar(new JChar("ju (d)", "ぢゅ", "ヂュ"));
-        djBlock.addJChar(new JChar("jo (d)", "ぢょ", "ヂョ"));
-
-        JBlock byBlock = new JBlock("by",0);
-        jAll.addJBlock(byBlock);
-        byBlock.setAchievementID("CgkI-byp9IcCEAIQGg");
-        byBlock.addJChar(new JChar("bya", "びゃ", "ビャ"));
-        byBlock.addJChar(new JChar("byu", "びゅ", "ビュ"));
-        byBlock.addJChar(new JChar("byo", "びょ", "ビョ"));
-
-        JBlock pyBlock = new JBlock("py",0);
-        jAll.addJBlock(pyBlock);
-        pyBlock.setAchievementID("CgkI-byp9IcCEAIQGw");
-        pyBlock.addJChar(new JChar("pya", "ぴゃ", "ピャ"));
-        pyBlock.addJChar(new JChar("pyu", "ぴゅ", "ピュ"));
-        pyBlock.addJChar(new JChar("pyo", "ぴょ", "ピョ"));
-
-        return jAll;
+        List<Button> toReset = new ArrayList<Button>();
+        toReset.addAll(this.answerButtons);
+        toReset.add(this.next);
+        for(Button b : toReset)
+        {
+            b.setTag(R.integer.incorrectTag, null);
+            b.setTag(R.integer.alternativeTag, null);
+            b.setTag(R.integer.correctTag, null);
+            b.setTag(R.integer.disabledTag, null);
+            b.setBackgroundResource(android.R.drawable.btn_default); //TODO: Run on UI Thread!
+        }
     }
 
     private void colorButtons(Button correct, JChar alternative)
     {
         for(Button b : this.answerButtons)
         {
-            String buttonText = b.getText().toString();
+            b.setTag(R.integer.disabledTag, new Boolean(true));
             if(b.equals(correct))
             {
-                //TODO: Make green
+                b.setBackgroundColor(ContextCompat.getColor(this.context, R.color.greenButton));
             }
-            else if(buttonText.equals(alternative)) //TODO: Check JChar
+            else if(alternative.compareToButton(b))
             {
-                //TODO: Make yellow
+                b.setBackgroundColor(ContextCompat.getColor(this.context, R.color.yellowButton));
             }
         }
     }
     private void clickAnswer(Button b)
     {
-        JChar correct = this.jAll.getQuestion().answer(b.getText().toString());
-        if(b.getTag(R.integer.disabledTag) != null) return;
+        JChar correct = this.jAll.getQuestion().answer(b);
+        if(b.getTag(R.integer.disabledTag) != null && ((Boolean)b.getTag(R.integer.disabledTag)).booleanValue() == true) return;
+        this.next.setTag(R.integer.disabledTag, new Boolean(false));
         if(correct != null)
         {
             colorButtons(b, correct);
-
-
+            this.next.setTag(R.integer.disabledTag, new Boolean(false));
         }
+        else
+        {
+            setButtonFalse(b);
+        }
+        this.updateScore();
     }
+
+    private void updateScore() {
+    }
+
     @Override
     public void onClick(View view) {
         Button b = (Button)view;
+        clickAnswer(b);
 
+    }
 
+    public void setButtonFalse(Button b) {
+        b.setTag(R.integer.incorrectTag, new Boolean(true));
+        b.setTag(R.integer.disabledTag, new Boolean(true));
+        b.setBackgroundColor(ContextCompat.getColor(this.context, R.color.redButton));
     }
 }

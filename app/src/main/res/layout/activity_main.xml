@@ -16,7 +16,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:id="@+id/linearLayout">
 
         <Space
             android:layout_width="match_parent"
@@ -140,7 +141,94 @@
                 android:layout_weight="1"
                 android:text="@string/answer_placeholder"
                 android:textSize="25sp" />
+
         </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/hiraganaProgress"
+                android:id="@+id/hiraganaProgress" />
+
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:id="@+id/hiraganaProgressbar" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/katakanaProgress"
+                android:id="@+id/katakanaProgress" />
+
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:id="@+id/katakanaProgressbar" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/charProgress"
+                android:id="@+id/charProgress" />
+
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:id="@+id/charProgressbar" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/blockProgress"
+                android:id="@+id/blockProgress" />
+
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:id="@+id/blockProgressbar" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/next"
+                android:id="@+id/next"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true" />
+        </RelativeLayout>
 
     </LinearLayout>
 

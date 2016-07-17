@@ -117,6 +117,26 @@ public class JAll {
         }
         return score;
     }
+    public void updateSiblings()
+    {
+        for(int i = 1; i < this.size(); i++)
+        {
+            JBlock jBlock = this.getBlock(i);
+            jBlock.setPrev(this.getBlock(this.size() - 1));
+            jBlock.getPrev().setNext(jBlock);
+            jBlock.setParent(this);
+        }
+    }
+    public void addJBlock(int i, JBlock jBlock)
+    {
+        if(this.size() > 0)
+        {
+            jBlock.setPrev(this.getBlock(this.size() - 1));
+            jBlock.getPrev().setNext(jBlock);
+        }
+        this.jBlockList.add(i, jBlock);
+        jBlock.setParent(this);
+    }
     public void addJBlock(JBlock jBlock)
     {
         if(this.size() > 0)

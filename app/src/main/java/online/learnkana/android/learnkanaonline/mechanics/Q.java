@@ -1,5 +1,7 @@
 package online.learnkana.android.learnkanaonline.mechanics;
 
+import android.widget.Button;
+
 /**
  * Created by Marc on 7/14/2016.
  */
@@ -10,6 +12,10 @@ public class Q {
     public Q(QA qa, JChar jChar) {
         this.qa = qa;
         this.jChar = jChar;
+    }
+    public JChar answer(Button b)
+    {
+        return this.answer(b.getText().toString());
     }
     public JChar answer(String chr)
     {
