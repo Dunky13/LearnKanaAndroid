@@ -7,3 +7,5 @@
 /build
 /captures
 /app/*.log
+/app/*.apk
+/app/build

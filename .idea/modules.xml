@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/LearnKanaAndroid.iml" filepath="$PROJECT_DIR$/LearnKanaAndroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/LearnKanaOnline.iml" filepath="$PROJECT_DIR$/LearnKanaOnline.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/learnkana/app.iml" filepath="$PROJECT_DIR$/learnkana/app.iml" />
     </modules>
   </component>
 </project>
